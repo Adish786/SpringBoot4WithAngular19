@@ -4,6 +4,10 @@ import com.product.repository.ProductRepository;
 import com.product.entity.Product;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
+@Endpoint(id = "customEndpoint")
 public class ProductController {
 
     @Autowired
@@ -20,6 +25,7 @@ public class ProductController {
 
     // GET all products
     @GetMapping
+    //@ReadOperation
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return ResponseEntity.ok(products);
@@ -27,6 +33,7 @@ public class ProductController {
 
     // GET product by ID
     @GetMapping("/{id}")
+   // @ReadOperation
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Optional<Product> product = productRepository.findById(id);
         return product.map(ResponseEntity::ok)
@@ -35,6 +42,7 @@ public class ProductController {
 
     // CREATE new product
     @PostMapping
+   // @WriteOperation
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         Product savedProduct = productRepository.save(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
@@ -42,6 +50,7 @@ public class ProductController {
 
     // UPDATE product
     @PutMapping("/{id}")
+   // @WriteOperation
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, 
                                                @Valid @RequestBody Product productDetails) {
         Optional<Product> optionalProduct = productRepository.findById(id);
@@ -60,6 +69,7 @@ public class ProductController {
 
     // DELETE product
     @DeleteMapping("/{id}")
+  //  @DeleteOperation
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         if (!productRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
